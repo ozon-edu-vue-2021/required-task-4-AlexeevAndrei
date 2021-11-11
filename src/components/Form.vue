@@ -2,29 +2,45 @@
   <BContainer>
     <h4>Личные данные</h4>
     <!-- <h2>Данные: {{ formData }}</h2> -->
-    <BForm class="form" @submit.prevent="formSubmit">
+    <BForm class="form" @submit.prevent="formSubmit" novalidate>
       <BRow>
         <BCol cols="3">
           <BFormGroup label="Фамилия" label-for="lastname">
-            <BFormInput id="lastname" type="text" v-model="formData.lastName" />
+            <BFormInput
+              :class="{ error: validationForm.lastName }"
+              id="lastname"
+              type="text"
+              v-model="formData.lastName"
+            />
+            <span class="errorMessage" v-if="validationForm.lastName"
+              >Некорректные данные</span
+            >
           </BFormGroup>
         </BCol>
         <BCol cols="3">
           <BFormGroup label="Имя" label-for="firsname">
             <BFormInput
+              :class="{ error: validationForm.firstName }"
               id="firsname"
               type="text"
               v-model="formData.firstName"
             />
+            <span class="errorMessage" v-if="validationForm.firstName"
+              >Некорректные данные</span
+            >
           </BFormGroup>
         </BCol>
         <BCol cols="3">
           <BFormGroup label="Отчество" label-for="patronymic">
             <BFormInput
+              :class="{ error: validationForm.patronymic }"
               id="patronymic"
               type="text"
               v-model="formData.patronymic"
             />
+            <span class="errorMessage" v-if="validationForm.patronymic"
+              >Некорректные данные</span
+            >
           </BFormGroup>
         </BCol>
       </BRow>
@@ -33,11 +49,15 @@
         <BCol cols="4">
           <BFormGroup label="Дата рождения" label-for="datebirth">
             <BFormInput
+              :class="{ error: validationForm.dateOfBirth }"
               id="datebirth"
               type="text"
               placeholder="дд.мм.гггг"
               v-model="formData.dateOfBirth"
             />
+            <span class="errorMessage" v-if="validationForm.dateOfBirth"
+              >Некорректные данные</span
+            >
           </BFormGroup>
         </BCol>
       </BRow>
@@ -46,11 +66,15 @@
         <BCol cols="9">
           <BFormGroup label="E-mail" label-for="email">
             <BFormInput
+              :class="{ error: validationForm.email }"
               id="email"
               type="email"
               v-model="formData.email"
               placeholder="example@example.com"
             />
+            <span class="errorMessage" v-if="validationForm.email"
+              >Некорректные данные</span
+            >
           </BFormGroup>
         </BCol>
       </BRow>
@@ -100,19 +124,27 @@
           <BCol cols="3">
             <BFormGroup label="Серия паспорта" label-for="passportSeries">
               <BFormInput
+                :class="{ error: validationForm.passportSeries }"
                 id="passportSeries"
                 type="text"
                 v-model="formData.passportSeries"
               />
+              <span class="errorMessage" v-if="validationForm.passportSeries"
+                >Некорректные данные</span
+              >
             </BFormGroup>
           </BCol>
           <BCol cols="3">
             <BFormGroup label="Номер паспорта" label-for="passportNumber">
               <BFormInput
+                :class="{ error: validationForm.passportNumber }"
                 id="passportNumber"
                 type="text"
                 v-model="formData.passportNumber"
               />
+              <span class="errorMessage" v-if="validationForm.passportNumber"
+                >Некорректные данные</span
+              >
             </BFormGroup>
           </BCol>
           <BCol cols="3">
@@ -133,20 +165,28 @@
           <BCol cols="5">
             <BFormGroup label="Фамилия на латинице" label-for="lastname_en">
               <BFormInput
+                :class="{ error: validationForm.lastName_en }"
                 id="lastname_en"
                 type="text"
                 v-model="formData.lastName_en"
               />
+              <span class="errorMessage" v-if="validationForm.lastName_en"
+                >Некорректные данные</span
+              >
             </BFormGroup>
           </BCol>
 
           <BCol cols="5">
             <BFormGroup label="Имя на латинице" label-for="firsname_en">
               <BFormInput
+                :class="{ error: validationForm.firstName_en }"
                 id="firsname_en"
                 type="text"
                 v-model="formData.firstName_en"
               />
+              <span class="errorMessage" v-if="validationForm.firstName_en"
+                >Некорректные данные</span
+              >
             </BFormGroup>
           </BCol>
         </BRow>
@@ -158,10 +198,16 @@
               label-for="foreignPassportNumber"
             >
               <BFormInput
+                :class="{ error: validationForm.foreignPassportNumber }"
                 id="foreignPassportNumber"
                 type="text"
                 v-model="formData.foreignPassportNumber"
               />
+              <span
+                class="errorMessage"
+                v-if="validationForm.foreignPassportNumber"
+                >Некорректные данные</span
+              >
             </BFormGroup>
           </BCol>
 
@@ -210,10 +256,16 @@
               label-for="beforeChangeLastName"
             >
               <BFormInput
+                :class="{ error: validationForm.beforeChangeLastName }"
                 id="beforeChangeLastName"
                 type="text"
                 v-model="formData.beforeChangeLastName"
               />
+              <span
+                :class="errorMessage"
+                v-if="validationForm.beforeChangeLastName"
+                >Некорректные данные</span
+              >
             </BFormGroup>
           </BCol>
 
@@ -223,10 +275,16 @@
               label-for="beforeChangeFirstName"
             >
               <BFormInput
+                :class="{ error: validationForm.beforeChangeFirstName }"
                 id="beforeChangeFirstName"
                 type="text"
                 v-model="formData.beforeChangeFirstName"
               />
+              <span
+                class="errorMessage"
+                v-if="validationForm.beforeChangeFirstName"
+                >Некорректные данные</span
+              >
             </BFormGroup>
           </BCol>
         </BRow>
@@ -277,6 +335,36 @@ export default {
     issueCountry: [],
     isDropdownOpen: false,
     searchCountry: "",
+
+    regExpDic: {
+      lastName: /[А-Яа-я]+/,
+      firstName: /[А-Яа-я]+/,
+      patronymic: /[А-Яа-я]+/,
+      beforeChangeLastName: /[А-Яа-я]+/,
+      beforeChangeFirstName: /[А-Яа-я]+/,
+      email:
+        /^([a-zA-Z0-9_\-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/,
+      passportSeries: /^[0-9]{4}$/,
+      passportNumber: /^[0-9]{6}$/,
+      foreignPassportNumber: /[0-9]+/,
+      lastName_en: /^[a-zA-Z]+/,
+      firstName_en: /^[a-zA-Z]+/,
+    },
+
+    validationForm: {
+      lastName: false,
+      firstName: false,
+      patronymic: false,
+      dateOfBirth: false,
+      beforeChangeLastName: false,
+      beforeChangeFirstName: false,
+      email: false,
+      passportSeries: false,
+      passportNumber: false,
+      foreignPassportNumber: false,
+      lastName_en: false,
+      firstName_en: false,
+    },
   }),
 
   created() {
@@ -289,7 +377,7 @@ export default {
       if (this.searchCountry === "") {
         return this.allCountries;
       }
-      let res = this.allCountries.filter((country) => {
+      return this.allCountries.filter((country) => {
         if (
           country.nationality
             .toLowerCase()
@@ -298,7 +386,6 @@ export default {
           return country;
         }
       });
-      return res;
     },
   },
 
@@ -341,7 +428,43 @@ export default {
     },
 
     formSubmit() {
-      console.log(this.formData);
+      this.validation();
+      this.validationDate();
+      if (!this.checkValidationForm()) {
+        console.log(JSON.stringify(this.formData));
+      } else {
+        console.error("ИСПРАВЬТЕ ДАННЫЕ");
+      }
+    },
+
+    validation() {
+      for (let key in this.formData) {
+        if (!this.regExpDic[key] || this.formData[key] === "") {
+          this.validationForm[key] = false;
+        } else if (!this.regExpDic[key].test(this.formData[key])) {
+          this.validationForm[key] = true;
+        } else {
+          this.validationForm[key] = false;
+        }
+      }
+    },
+
+    checkValidationForm() {
+      console.log(this.validationForm);
+      return Object.values(this.validationForm).find((item) => item === true);
+    },
+
+    validationDate() {
+      let formatDate = new Date(
+        this.formData.dateOfBirth.split(".").reverse().join(".")
+      );
+      let currentDate = new Date();
+
+      if (formatDate.getTime() < currentDate.getTime()) {
+        this.validationForm.dateOfBirth = false;
+      } else {
+        this.validationForm.dateOfBirth = true;
+      }
     },
   },
 };
@@ -365,5 +488,13 @@ li {
 ul {
   margin-left: 0;
   padding-left: 0;
+}
+
+.error {
+  border: 1px solid red;
+}
+
+.errorMessage {
+  color: red;
 }
 </style>
