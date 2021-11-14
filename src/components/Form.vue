@@ -340,7 +340,7 @@ export default {
         isError: false,
         validate: true,
       },
-      dateOfBirth: { value: "", isError: false, validate: true },
+      dateOfBirth: { value: "", isError: false, validate: false },
       email: { value: "", reg: REGEXP_EMAIL, isError: false, validate: true },
       gender: { value: "", isError: false, validate: false },
       citizenship: { value: "", isError: false, validate: true },
@@ -460,6 +460,11 @@ export default {
     validation() {
       for (let key in this.formData) {
         if (this.formData[key].value === "" && this.formData[key].validate) {
+          this.formData[key].isError = true;
+        } else if (
+          this.formData[key].reg &&
+          !this.formData[key].reg.test(this.formData[key].value)
+        ) {
           this.formData[key].isError = true;
         } else {
           this.formData[key].isError = false;
