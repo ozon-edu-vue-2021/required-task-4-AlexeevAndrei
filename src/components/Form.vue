@@ -7,12 +7,12 @@
         <BCol cols="3">
           <BFormGroup label="Фамилия" label-for="lastname">
             <BFormInput
-              :class="{ error: validationForm.lastName }"
+              :class="{ error: formData.lastName.isError }"
               id="lastname"
               type="text"
-              v-model="formData.lastName"
+              v-model="formData.lastName.value"
             />
-            <span class="errorMessage" v-if="validationForm.lastName"
+            <span class="errorMessage" v-if="formData.lastName.isError"
               >Некорректные данные</span
             >
           </BFormGroup>
@@ -20,12 +20,12 @@
         <BCol cols="3">
           <BFormGroup label="Имя" label-for="firsname">
             <BFormInput
-              :class="{ error: validationForm.firstName }"
+              :class="{ error: formData.firstName.isError }"
               id="firsname"
               type="text"
-              v-model="formData.firstName"
+              v-model="formData.firstName.value"
             />
-            <span class="errorMessage" v-if="validationForm.firstName"
+            <span class="errorMessage" v-if="formData.firstName.isError"
               >Некорректные данные</span
             >
           </BFormGroup>
@@ -33,12 +33,12 @@
         <BCol cols="3">
           <BFormGroup label="Отчество" label-for="patronymic">
             <BFormInput
-              :class="{ error: validationForm.patronymic }"
+              :class="{ error: formData.patronymic.isError }"
               id="patronymic"
               type="text"
-              v-model="formData.patronymic"
+              v-model="formData.patronymic.value"
             />
-            <span class="errorMessage" v-if="validationForm.patronymic"
+            <span class="errorMessage" v-if="formData.patronymic.isError"
               >Некорректные данные</span
             >
           </BFormGroup>
@@ -49,13 +49,13 @@
         <BCol cols="4">
           <BFormGroup label="Дата рождения" label-for="datebirth">
             <BFormInput
-              :class="{ error: validationForm.dateOfBirth }"
+              :class="{ error: formData.dateOfBirth.isError }"
               id="datebirth"
               type="text"
               placeholder="дд.мм.гггг"
-              v-model="formData.dateOfBirth"
+              v-model="formData.dateOfBirth.value"
             />
-            <span class="errorMessage" v-if="validationForm.dateOfBirth"
+            <span class="errorMessage" v-if="formData.dateOfBirth.isError"
               >Некорректные данные</span
             >
           </BFormGroup>
@@ -66,13 +66,13 @@
         <BCol cols="9">
           <BFormGroup label="E-mail" label-for="email">
             <BFormInput
-              :class="{ error: validationForm.email }"
+              :class="{ error: formData.email.isError }"
               id="email"
               type="email"
-              v-model="formData.email"
+              v-model="formData.email.value"
               placeholder="example@example.com"
             />
-            <span class="errorMessage" v-if="validationForm.email"
+            <span class="errorMessage" v-if="formData.email.isError"
               >Некорректные данные</span
             >
           </BFormGroup>
@@ -83,10 +83,10 @@
         <BCol>
           <BFormGroup label="Пол">
             <BFormRadioGroup>
-              <BFormRadio v-model="formData.gender" value="male"
+              <BFormRadio v-model="formData.gender.value" value="Мужской"
                 >Мужской</BFormRadio
               >
-              <BFormRadio v-model="formData.gender" value="female"
+              <BFormRadio v-model="formData.gender.value" value="Женский"
                 >Женский</BFormRadio
               >
             </BFormRadioGroup>
@@ -104,10 +104,13 @@
               v-model="searchCountry"
               @focus="isDropdownOpen = true"
             />
+            <span class="errorMessage" v-if="formData.citizenship.isError"
+              >Укажите гражданство</span
+            >
             <div class="country-dropdown" v-if="isDropdownOpen" cols="4">
               <ul>
                 <li
-                  v-for="country in filterCountries"
+                  v-for="country in allCountries"
                   :key="country.id"
                   @click="onClick(country)"
                 >
@@ -118,18 +121,18 @@
           </BFormGroup>
         </BCol>
       </BRow>
-      <template v-if="formData.citizenship === ''"></template>
-      <template v-else-if="formData.citizenship === 'Russia'">
+      <template v-if="formData.citizenship.value === ''"></template>
+      <template v-else-if="formData.citizenship.value === 'Russia'">
         <BRow>
           <BCol cols="3">
             <BFormGroup label="Серия паспорта" label-for="passportSeries">
               <BFormInput
-                :class="{ error: validationForm.passportSeries }"
+                :class="{ error: formData.passportSeries.isError }"
                 id="passportSeries"
                 type="text"
-                v-model="formData.passportSeries"
+                v-model="formData.passportSeries.value"
               />
-              <span class="errorMessage" v-if="validationForm.passportSeries"
+              <span class="errorMessage" v-if="formData.passportSeries.isError"
                 >Некорректные данные</span
               >
             </BFormGroup>
@@ -137,12 +140,12 @@
           <BCol cols="3">
             <BFormGroup label="Номер паспорта" label-for="passportNumber">
               <BFormInput
-                :class="{ error: validationForm.passportNumber }"
+                :class="{ error: formData.passportNumber.isError }"
                 id="passportNumber"
                 type="text"
-                v-model="formData.passportNumber"
+                v-model="formData.passportNumber.value"
               />
-              <span class="errorMessage" v-if="validationForm.passportNumber"
+              <span class="errorMessage" v-if="formData.passportNumber.isError"
                 >Некорректные данные</span
               >
             </BFormGroup>
@@ -153,7 +156,7 @@
                 id="passportIssueDate"
                 type="text"
                 placeholder="дд.мм.гггг"
-                v-model="formData.passportIssueDate"
+                v-model="formData.passportIssueDate.value"
               />
             </BFormGroup>
           </BCol>
@@ -165,12 +168,12 @@
           <BCol cols="5">
             <BFormGroup label="Фамилия на латинице" label-for="lastname_en">
               <BFormInput
-                :class="{ error: validationForm.lastName_en }"
+                :class="{ error: formData.lastName_en.isError }"
                 id="lastname_en"
                 type="text"
-                v-model="formData.lastName_en"
+                v-model="formData.lastName_en.value"
               />
-              <span class="errorMessage" v-if="validationForm.lastName_en"
+              <span class="errorMessage" v-if="formData.lastName_en.isError"
                 >Некорректные данные</span
               >
             </BFormGroup>
@@ -179,12 +182,12 @@
           <BCol cols="5">
             <BFormGroup label="Имя на латинице" label-for="firsname_en">
               <BFormInput
-                :class="{ error: validationForm.firstName_en }"
+                :class="{ error: formData.firstName_en.isError }"
                 id="firsname_en"
                 type="text"
-                v-model="formData.firstName_en"
+                v-model="formData.firstName_en.value"
               />
-              <span class="errorMessage" v-if="validationForm.firstName_en"
+              <span class="errorMessage" v-if="formData.firstName_en.isError"
                 >Некорректные данные</span
               >
             </BFormGroup>
@@ -198,14 +201,14 @@
               label-for="foreignPassportNumber"
             >
               <BFormInput
-                :class="{ error: validationForm.foreignPassportNumber }"
+                :class="{ error: formData.foreignPassportNumber.isError }"
                 id="foreignPassportNumber"
                 type="text"
-                v-model="formData.foreignPassportNumber"
+                v-model="formData.foreignPassportNumber.value"
               />
               <span
                 class="errorMessage"
-                v-if="validationForm.foreignPassportNumber"
+                v-if="formData.foreignPassportNumber.isError"
                 >Некорректные данные</span
               >
             </BFormGroup>
@@ -216,7 +219,7 @@
               <BFormSelect
                 id="countryOfIssue"
                 :options="issueCountry"
-                v-model="formData.countryOfIssue"
+                v-model="formData.countryOfIssue.value"
               ></BFormSelect>
             </BFormGroup>
           </BCol>
@@ -226,7 +229,7 @@
               <BFormSelect
                 id="typeOfPassport"
                 :options="passportTypes"
-                v-model="formData.typeOfPassport"
+                v-model="formData.typeOfPassport.value"
               ></BFormSelect>
             </BFormGroup>
           </BCol>
@@ -237,10 +240,10 @@
         <BCol>
           <BFormGroup label="Менял ли фамилию или имя?">
             <BFormRadioGroup>
-              <BFormRadio v-model="formData.changeLastName" value="no"
+              <BFormRadio v-model="formData.changeLastName.value" value="no"
                 >Нет</BFormRadio
               >
-              <BFormRadio v-model="formData.changeLastName" value="yes"
+              <BFormRadio v-model="formData.changeLastName.value" value="yes"
                 >Да</BFormRadio
               >
             </BFormRadioGroup>
@@ -248,7 +251,7 @@
         </BCol>
       </BRow>
 
-      <template v-if="formData.changeLastName === 'yes'">
+      <template v-if="formData.changeLastName.value === 'yes'">
         <BRow>
           <BCol cols="5">
             <BFormGroup
@@ -256,14 +259,14 @@
               label-for="beforeChangeLastName"
             >
               <BFormInput
-                :class="{ error: validationForm.beforeChangeLastName }"
+                :class="{ error: formData.beforeChangeLastName.isError }"
                 id="beforeChangeLastName"
                 type="text"
-                v-model="formData.beforeChangeLastName"
+                v-model="formData.beforeChangeLastName.value"
               />
               <span
-                :class="errorMessage"
-                v-if="validationForm.beforeChangeLastName"
+                class="errorMessage"
+                v-if="formData.beforeChangeLastName.isError"
                 >Некорректные данные</span
               >
             </BFormGroup>
@@ -275,14 +278,14 @@
               label-for="beforeChangeFirstName"
             >
               <BFormInput
-                :class="{ error: validationForm.beforeChangeFirstName }"
+                :class="{ error: formData.beforeChangeFirstName.isError }"
                 id="beforeChangeFirstName"
                 type="text"
-                v-model="formData.beforeChangeFirstName"
+                v-model="formData.beforeChangeFirstName.value"
               />
               <span
                 class="errorMessage"
-                v-if="validationForm.beforeChangeFirstName"
+                v-if="formData.beforeChangeFirstName.isError"
                 >Некорректные данные</span
               >
             </BFormGroup>
@@ -301,7 +304,15 @@
 import citizenships from "@/assets/data/citizenships.json";
 import passportTypes from "@/assets/data/passport-types.json";
 import ClickOutside from "vue-click-outside";
-// import { debounce } from "vue-debounce";
+import { debounce } from "@/helpers/debounce.js";
+
+const REGEXP_CIRILIC = /[А-Яа-я]+/;
+const REGEXP_LATIN = /^[a-zA-Z]+/;
+const REGEXP_EMAIL =
+  /^([a-zA-Z0-9_\-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/;
+const REGEXP_PASSPORT_NUMBER = /^[0-9]{6}$/;
+const REGEXP_PASSPORT_SERIES = /^[0-9]{4}$/;
+const REGEXP_FOREIGN_PASSPORT_NUMBER = /[0-9]+/;
 
 export default {
   name: "Form",
@@ -311,103 +322,109 @@ export default {
 
   data: () => ({
     formData: {
-      lastName: "",
-      firstName: "",
-      patronymic: "",
-      dateOfBirth: "",
-      email: "",
-      gender: "",
-      citizenship: "",
-      passportSeries: "",
-      passportNumber: "",
-      passportIssueDate: "",
-      foreignPassportNumber: "",
-      countryOfIssue: "",
-      typeOfPassport: "",
-      changeLastName: "",
-      lastName_en: "",
-      firstName_en: "",
-      beforeChangeLastName: "",
-      beforeChangeFirstName: "",
+      lastName: {
+        value: "",
+        reg: REGEXP_CIRILIC,
+        isError: false,
+        validate: true,
+      },
+      firstName: {
+        value: "",
+        reg: REGEXP_CIRILIC,
+        isError: false,
+        validate: true,
+      },
+      patronymic: {
+        value: "",
+        reg: REGEXP_CIRILIC,
+        isError: false,
+        validate: true,
+      },
+      dateOfBirth: { value: "", isError: false, validate: true },
+      email: { value: "", reg: REGEXP_EMAIL, isError: false, validate: true },
+      gender: { value: "", isError: false, validate: false },
+      citizenship: { value: "", isError: false, validate: true },
+      passportSeries: {
+        value: "",
+        reg: REGEXP_PASSPORT_SERIES,
+        isError: false,
+        validate: true,
+      },
+      passportNumber: {
+        value: "",
+        reg: REGEXP_PASSPORT_NUMBER,
+        isError: false,
+        validate: true,
+      },
+      passportIssueDate: { value: "" },
+      foreignPassportNumber: {
+        value: "",
+        reg: REGEXP_FOREIGN_PASSPORT_NUMBER,
+        isError: false,
+        validate: true,
+      },
+      countryOfIssue: { value: "", validate: false },
+      typeOfPassport: { value: "", validate: false },
+      changeLastName: { value: "", validate: false },
+      lastName_en: {
+        value: "",
+        reg: REGEXP_LATIN,
+        isError: false,
+        validate: true,
+      },
+      firstName_en: {
+        value: "",
+        reg: REGEXP_LATIN,
+        isError: false,
+        validate: true,
+      },
+      beforeChangeLastName: {
+        value: "",
+        reg: REGEXP_CIRILIC,
+        isError: false,
+        validate: true,
+      },
+      beforeChangeFirstName: {
+        value: "",
+        reg: REGEXP_CIRILIC,
+        isError: false,
+        validate: true,
+      },
     },
+
     allCountries: citizenships,
     passportTypes: [],
     issueCountry: [],
     isDropdownOpen: false,
     searchCountry: "",
-
-    regExpDic: {
-      lastName: /[А-Яа-я]+/,
-      firstName: /[А-Яа-я]+/,
-      patronymic: /[А-Яа-я]+/,
-      beforeChangeLastName: /[А-Яа-я]+/,
-      beforeChangeFirstName: /[А-Яа-я]+/,
-      email:
-        /^([a-zA-Z0-9_\-.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9-]+\.)+))([a-zA-Z]{1,5}|[0-9]{1,3})(\]?)$/,
-      passportSeries: /^[0-9]{4}$/,
-      passportNumber: /^[0-9]{6}$/,
-      foreignPassportNumber: /[0-9]+/,
-      lastName_en: /^[a-zA-Z]+/,
-      firstName_en: /^[a-zA-Z]+/,
-    },
-
-    validationForm: {
-      lastName: false,
-      firstName: false,
-      patronymic: false,
-      dateOfBirth: false,
-      beforeChangeLastName: false,
-      beforeChangeFirstName: false,
-      email: false,
-      passportSeries: false,
-      passportNumber: false,
-      foreignPassportNumber: false,
-      lastName_en: false,
-      firstName_en: false,
-    },
+    debouncedSearchCountries: null,
   }),
 
   created() {
     this.issueCountry = this.getCitizenshipOptions();
     this.passportTypes = this.getPassportTypes();
+    this.debouncedSearchCountries = debounce(this.filterCountries, 500);
   },
 
-  computed: {
-    filterCountries() {
-      if (this.searchCountry === "") {
-        return this.allCountries;
-      }
-      return this.allCountries.filter((country) => {
-        if (
-          country.nationality
-            .toLowerCase()
-            .startsWith(this.searchCountry.toLowerCase())
-        ) {
-          return country;
-        }
-      });
-    },
-  },
+  computed: {},
 
   methods: {
     getCitizenshipOptions() {
-      let options = citizenships.map((item) => {
+      return citizenships.map((item) => {
         return {
           value: item.nationality,
           text: item.nationality,
         };
       });
-      return options;
     },
 
     getPassportTypes() {
-      let options = passportTypes.map((item) => {
+      return passportTypes.map((item) => {
         return {
           value: item.type,
           text: item.type,
         };
       });
-      return options;
     },
 
     hideDropdown() {
@@ -415,56 +432,90 @@ export default {
     },
 
     onClick(selectedCountry) {
-      this.formData.citizenship = selectedCountry.nationality;
-      this.formData.passportNumber = "";
-      this.formData.passportSeries = "";
-      this.formData.passportIssueDate = "";
-      this.formData.foreignPassportNumber = "";
-      this.formData.countryOfIssue = "";
-      this.formData.typeOfPassport = "";
-      this.formData.lastName_en = "";
-      this.formData.firstName_en = "";
+      this.formData.citizenship.value = selectedCountry.nationality;
+      this.formData.passportNumber.value = "";
+      this.formData.passportSeries.value = "";
+      this.formData.passportIssueDate.value = "";
+      this.formData.foreignPassportNumber.value = "";
+      this.formData.countryOfIssue.value = "";
+      this.formData.typeOfPassport.value = "";
+      this.formData.lastName_en.value = "";
+      this.formData.firstName_en.value = "";
       this.hideDropdown();
     },
 
     formSubmit() {
       this.validation();
-      this.validationDate();
-      if (!this.checkValidationForm()) {
-        console.log(JSON.stringify(this.formData));
+      if (this.checkValidation()) {
+        let res = {};
+        for (let key in this.formData) {
+          res[key] = this.formData[key].value;
+        }
+        console.log(JSON.stringify(res));
       } else {
-        console.error("ИСПРАВЬТЕ ДАННЫЕ");
+        console.error("НЕКОРРЕКТНЫЕ ДАННЫЕ");
       }
     },
 
     validation() {
       for (let key in this.formData) {
-        if (!this.regExpDic[key] || this.formData[key] === "") {
-          this.validationForm[key] = false;
-        } else if (!this.regExpDic[key].test(this.formData[key])) {
-          this.validationForm[key] = true;
+        if (this.formData[key].value === "" && this.formData[key].validate) {
+          this.formData[key].isError = true;
         } else {
-          this.validationForm[key] = false;
+          this.formData[key].isError = false;
         }
       }
+      if (
+        this.formData.changeLastName.value === "no" ||
+        this.formData.changeLastName.value === ""
+      ) {
+        this.formData.beforeChangeLastName.isError = false;
+        this.formData.beforeChangeFirstName.isError = false;
+      }
+      if (this.formData.citizenship.value === "Russia") {
+        this.formData.foreignPassportNumber.isError = false;
+        this.formData.lastName_en.isError = false;
+        this.formData.firstName_en.isError = false;
+      }
+      if (this.formData.citizenship.value !== "Russia") {
+        this.formData.passportSeries.isError = false;
+        this.formData.passportNumber.isError = false;
+      }
+      this.validationDate();
     },
 
-    checkValidationForm() {
-      console.log(this.validationForm);
-      return Object.values(this.validationForm).find((item) => item === true);
+    checkValidation() {
+      if (Object.values(this.formData).find((data) => data.isError)) {
+        return false;
+      }
+      return true;
     },
 
     validationDate() {
       let formatDate = new Date(
-        this.formData.dateOfBirth.split(".").reverse().join(".")
+        this.formData.dateOfBirth.value.split(".").reverse().join(".")
       );
       let currentDate = new Date();
 
       if (formatDate.getTime() < currentDate.getTime()) {
-        this.validationForm.dateOfBirth = false;
+        this.formData.dateOfBirth.isError = false;
       } else {
-        this.validationForm.dateOfBirth = true;
+        this.formData.dateOfBirth.isError = true;
       }
+    },
+
+    filterCountries(searchCountry) {
+      this.allCountries = citizenships.filter((country) =>
+        country.nationality
+          .toLowerCase()
+          .startsWith(searchCountry.toLowerCase())
+      );
+    },
+  },
+
+  watch: {
+    searchCountry(newValue) {
+      this.debouncedSearchCountries(newValue);
     },
   },
 };
